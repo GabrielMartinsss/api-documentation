@@ -1,12 +1,12 @@
 import { fastify } from 'fastify'
 import { fastifyCors } from '@fastify/cors'
-import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod'
+import { validatorCompiler, serializerCompiler, ZodTypeProvider, jsonSchemaTransform } from 'fastify-type-provider-zod'
 import { fastifySwagger } from '@fastify/swagger'
 import { fastifySwaggerUi } from '@fastify/swagger-ui'
 import { examplesRoute } from './routes/examples'
 
 const _PORT = 3333
-const app = fastify()
+const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.setValidatorCompiler(validatorCompiler)
 app.setSerializerCompiler(serializerCompiler)
@@ -17,7 +17,8 @@ app.register(fastifySwagger, {
       title: 'Typed API',
       version: '1.0.0',
     }
-  }
+  },
+  transform: jsonSchemaTransform
 })
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs'
